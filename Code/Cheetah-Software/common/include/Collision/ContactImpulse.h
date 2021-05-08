@@ -44,6 +44,8 @@ class ContactImpulse : public ContactConstraint<T> {
     (void)D;
     // Set penetration recovery ration here
     _penetration_recover_ratio = 0.0 / dt;
+    // _penetration_recover_ratio = dt / dt; // 1 ?
+
     _dt = dt;
   }
 

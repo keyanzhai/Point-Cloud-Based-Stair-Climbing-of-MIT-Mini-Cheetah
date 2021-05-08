@@ -2,7 +2,7 @@
 #define _solver_mpc
 
 
-#include <eigen3/Eigen/Dense>
+#include <eigen3/eigen/Eigen/Dense>
 #include "common_types.h"
 #include "convexMPC_interface.h"
 #include <iostream>

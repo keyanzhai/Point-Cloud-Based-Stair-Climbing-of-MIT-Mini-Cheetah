@@ -45,7 +45,7 @@ void RobotRunner::init() {
   _model = _quadruped.buildModel();
   _jpos_initializer = new JPosInitializer<float>(3., controlParameters->controller_dt);
 
-  // Always initialize the leg controller and state entimator
+  // Always initialize the leg controller and state estimator
   _legController = new LegController<float>(_quadruped);
   _stateEstimator = new StateEstimatorContainer<float>(
       cheaterState, vectorNavData, _legController->datas,
@@ -75,6 +75,7 @@ void RobotRunner::init() {
 
   _robot_ctrl->initializeController();
 
+  outfile.open("/home/zky/Desktop/Courses/Thesis/Cheetah-Software/Experiment/Simulation/height1.out", std::ios::out | std::ios::trunc);
 }
 
 /**
@@ -85,6 +86,9 @@ void RobotRunner::run() {
   // Run the state estimator step
   //_stateEstimator->run(cheetahMainVisualization);
   _stateEstimator->run();
+
+  EstimatedstateLogger();
+
   //cheetahMainVisualization->p = _stateEstimate.position;
   visualizationData->clear();
 
@@ -237,9 +241,25 @@ void RobotRunner::initializeStateEstimator(bool cheaterMode) {
 }
 
 RobotRunner::~RobotRunner() {
+  outfile.close();
+
   delete _legController;
   delete _stateEstimator;
   delete _jpos_initializer;
 }
 
 void RobotRunner::cleanup() {}
+
+void RobotRunner::EstimatedstateLogger()
+{
+  // printf("Estimated State will be logged in to a file.\n");
+
+  const StateEstimate<float>& alldata = _stateEstimator->getResult();
+  Vec3<float> position = alldata.position;
+  float z = position[2];
+  // std::cout << "position = " << position << std::endl;
+  // std::cout << "z = " << position[2] << std::endl;
+  if (z >= 0.27)
+    outfile << z << std::endl;
+
+}

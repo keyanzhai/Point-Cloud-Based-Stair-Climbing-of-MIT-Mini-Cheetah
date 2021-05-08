@@ -2,9 +2,9 @@
 #include "../convexMPC/common_types.h"
 #include "VisionMPC_interface.h"
 #include "VisionRobotState.h"
-#include <eigen3/Eigen/Dense>
+#include <eigen3/eigen/Eigen/Dense>
 #include <cmath>
-#include <eigen3/unsupported/Eigen/MatrixFunctions>
+#include <eigen3/eigen/unsupported/Eigen/MatrixFunctions>
 #include <qpOASES.hpp>
 #include <stdio.h>
 #include <sys/time.h>

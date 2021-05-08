@@ -1,7 +1,7 @@
 #include "WBIC.hpp"
 #include <Utilities/Timer.h>
-#include <eigen3/Eigen/LU>
-#include <eigen3/Eigen/SVD>
+#include <eigen3/eigen/Eigen/LU>
+#include <eigen3/eigen/Eigen/SVD>
 
   template <typename T>
 WBIC<T>::WBIC(size_t num_qdot, const std::vector<ContactSpec<T>*>* contact_list,

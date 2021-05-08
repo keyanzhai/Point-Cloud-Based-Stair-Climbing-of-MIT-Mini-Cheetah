@@ -10,7 +10,7 @@
 
 #include <vector>
 #include "cTypes.h"
-#include <eigen3/Eigen/Dense>
+#include <eigen3/eigen/Eigen/Dense>
 
 // Rotation Matrix
 template <typename T>
