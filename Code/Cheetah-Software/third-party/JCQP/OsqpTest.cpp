@@ -1,6 +1,6 @@
 
 #include "OsqpTest.h"
-#include <eigen3/Eigen/SparseCore>
+#include <eigen3/eigen/Eigen/SparseCore>
 #include "OsqpEigen/Solver.hpp"
 #include "OsqpEigen/Data.hpp"
 #include "OsqpEigen/Settings.hpp"

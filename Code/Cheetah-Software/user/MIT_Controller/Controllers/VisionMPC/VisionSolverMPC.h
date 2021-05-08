@@ -2,7 +2,7 @@
 #define vision_solver_mpc
 
 
-#include <eigen3/Eigen/Dense>
+#include <eigen3/eigen/Eigen/Dense>
 #include "../convexMPC/common_types.h"
 #include "VisionMPC_interface.h"
 #include <iostream>

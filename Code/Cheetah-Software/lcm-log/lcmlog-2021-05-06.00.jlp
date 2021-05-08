@@ -1,0 +1,7 @@
+ZOOMFRAC 0.01
+CHANNEL leg_control_command leg_control_command false
+CHANNEL leg_control_data leg_control_data false
+CHANNEL simulator_state simulator_state true
+CHANNEL spi_debug_cmd spi_debug_cmd false
+CHANNEL state_estimator state_estimator true
+CHANNEL wbc_lcm_data wbc_lcm_data false

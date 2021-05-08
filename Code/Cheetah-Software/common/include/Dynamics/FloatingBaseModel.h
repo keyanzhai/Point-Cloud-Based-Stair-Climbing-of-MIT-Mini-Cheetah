@@ -25,7 +25,7 @@
 #include "SpatialInertia.h"
 #include "spatial.h"
 
-#include <eigen3/Eigen/StdVector>
+#include <eigen3/eigen/Eigen/StdVector>
 
 using std::vector;
 using namespace ori;

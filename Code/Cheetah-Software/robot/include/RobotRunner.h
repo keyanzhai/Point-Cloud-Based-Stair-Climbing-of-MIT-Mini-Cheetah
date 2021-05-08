@@ -27,6 +27,9 @@
 #include "RobotController.h"
 #include <lcm-cpp.hpp>
 
+#include <iostream>
+#include <fstream>
+
 class RobotRunner : public PeriodicTask {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -39,6 +42,10 @@ class RobotRunner : public PeriodicTask {
 
   // Initialize the state estimator with default no cheaterMode
   void initializeStateEstimator(bool cheaterMode = false);
+
+  // Log the estimated state into a file
+  void EstimatedstateLogger();
+
   virtual ~RobotRunner();
 
   RobotController* _robot_ctrl;
@@ -79,6 +86,8 @@ class RobotRunner : public PeriodicTask {
 
   FloatingBaseModel<float> _model;
   u64 _iterations = 0;
+
+  std::ofstream outfile;
 };
 
 #endif  // PROJECT_ROBOTRUNNER_H

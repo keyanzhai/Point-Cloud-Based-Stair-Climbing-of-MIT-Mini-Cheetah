@@ -6,7 +6,7 @@
 #ifndef PROJECT_MATHUTILITIES_H
 #define PROJECT_MATHUTILITIES_H
 
-#include <eigen3/Eigen/Dense>
+#include <eigen3/eigen/Eigen/Dense>
 
 /*!
  * Square a number

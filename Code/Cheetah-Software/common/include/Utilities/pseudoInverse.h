@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <eigen3/Eigen/LU>
-#include <eigen3/Eigen/SVD>
+#include <eigen3/eigen/Eigen/LU>
+#include <eigen3/eigen/Eigen/SVD>
 using namespace std;
 
 /*!

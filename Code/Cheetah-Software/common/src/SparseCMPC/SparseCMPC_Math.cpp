@@ -1,6 +1,6 @@
 #include "SparseCMPC/SparseCMPC.h"
-#include <eigen3/Eigen/Dense>
-#include <eigen3/unsupported/Eigen/MatrixFunctions>
+#include <eigen3/eigen/Eigen/Dense>
+#include <eigen3/eigen/unsupported/Eigen/MatrixFunctions>
 
 
 void SparseCMPC::c2d(u32 trajIdx, u32 bBlockStartIdx, u32 block_count) {
