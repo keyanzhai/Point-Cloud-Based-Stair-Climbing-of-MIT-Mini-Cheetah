@@ -72,8 +72,12 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
+<<<<<<< HEAD
         "bit": "cpp",
         "alignedvector3": "cpp",
         "openglsupport": "cpp"
+=======
+        "bit": "cpp"
+>>>>>>> 80b43873c85049e801820ce9ac0ba739258c0bd5
     }
 }
