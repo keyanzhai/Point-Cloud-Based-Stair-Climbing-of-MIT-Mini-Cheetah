@@ -26,8 +26,21 @@ struct LegControllerCommand {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   LegControllerCommand() { zero(); }
 
+  // 函数功能：将结构体LegControllerCommand中所有的参数置零
   void zero();
 
+  /* What are the meanings of each parameter? I have no clue.
+    tauFeedForward: 输出的力矩（3*1）
+    forceFeedFoward: 输出的力（3*1）
+    qDes: 期望的关节位置（3*1）
+    qdDes: 期望的关节速度（3*1）
+    pDes: 期望的足端位置（3*1）    ** important **
+    vDes: 期望的足端速度（3*1）
+    kpCartesian: 笛卡尔空间比例系数，用来对足端行为进行控制（3*3）
+    kdCartesian: 笛卡尔空间微分系数，用来对足端行为进行控制（3*3）
+    kpJoint: 关节空间比例系数，用来对关节行为进行控制（3*3）
+    kdJoind: 关节空间微分系数，用来对关节行为进行控制（3*3）
+  */
   Vec3<T> tauFeedForward, forceFeedForward, qDes, qdDes, pDes, vDes;
   Mat3<T> kpCartesian, kdCartesian, kpJoint, kdJoint;
 };
@@ -42,8 +55,17 @@ struct LegControllerData {
 
   void setQuadruped(Quadruped<T>& quad) { quadruped = &quad; }
 
+  // 函数功能：将结构体LegControllerData中所有的参数置零
   void zero();
 
+  /* What are the meanings of each parameter? I have no clue.
+    q: 实际的关节位置（3*1）
+    qd: 实际的关节速度（3*1）
+    p: 实际的足端位置（3*1）
+    v: 实际的足端速度（3*1）
+    J: 关节力矩的估计值（3*1）
+    tauEstimate: Jacobian矩阵（3*3）
+  */
   Vec3<T> q, qd, p, v;
   Mat3<T> J;
   Vec3<T> tauEstimate;

@@ -75,7 +75,7 @@ void RobotRunner::init() {
 
   _robot_ctrl->initializeController();
 
-  outfile.open("/home/zky/Desktop/Courses/Thesis/Cheetah-Software/Experiment/Simulation/height1.out", std::ios::out | std::ios::trunc);
+  outfile.open("/home/zky/Desktop/Courses/Thesis/Cheetah-Software/Experiment/Simulation/old.out", std::ios::out | std::ios::trunc);
 }
 
 /**
@@ -259,7 +259,6 @@ void RobotRunner::EstimatedstateLogger()
   float z = position[2];
   // std::cout << "position = " << position << std::endl;
   // std::cout << "z = " << position[2] << std::endl;
-  if (z >= 0.27)
+  if (position[0] > 0.1)
     outfile << z << std::endl;
-
 }

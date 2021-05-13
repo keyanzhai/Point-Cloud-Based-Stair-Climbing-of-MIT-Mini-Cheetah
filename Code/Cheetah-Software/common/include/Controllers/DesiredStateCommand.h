@@ -32,6 +32,19 @@ struct DesiredStateData {
   void zero();
 
   // Instantaneous desired state command
+  /* [0]: Position X
+     [1]: Position Y
+     [2]: Position Z
+     [3]: Orientation Roll
+     [4]: Orientation Pitch
+     [5]: Orientation Yaw
+     [6]: Velocity X  
+     [7]: Velocity Y
+     [8]: Velocity Z
+     [9]: Angular Velocity X
+     [10]: Angular Velocity Y
+     [11]: Angular Velocity Z
+  */
   Vec12<T> stateDes;
 
   Vec12<T> pre_stateDes;

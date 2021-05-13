@@ -1,0 +1,42 @@
+ground-plane:
+    type: "infinite-plane"
+    mu: 0.5
+    restitution: 0.0
+    #height: 0.5
+    height: 0.0
+    graphicsSize: [20,20] # how large the plane appears
+    checkers: [40,40]     # how many checkers are on the plane
+
+#myStairs
+box-1:
+    type: "box"
+    mu: 0.7
+    restitution: 0
+    depth: 0.57
+    width: 1.5
+    height: 0.05
+    position: [1, 0, 0.025]
+    orientation: [0, 0, 0]
+    transparent: 0
+    
+box-2:
+    type: "box"
+    mu: 0.7
+    restitution: 0
+    depth: 0.57
+    width: 1.5
+    height: 0.1
+    position: [1.285, 0, 0.05]
+    orientation: [0, 0, 0]
+    transparent: 0
+
+box-3:
+    type: "box"
+    mu: 0.7
+    restitution: 0
+    depth: 0.57
+    width: 1.5
+    height: 0.15
+    position: [1.57, 0, 0.075]
+    orientation: [0, 0, 0]
+    transparent: 0

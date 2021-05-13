@@ -146,8 +146,10 @@ void VisionMPCLocomotion::_UpdateFoothold(Vec3<float> & foot, const Vec3<float> 
 
     Vec3<float> local_pf = foot - body_pos;
 
-    int row_idx_half = height_map.rows()/2;
-    int col_idx_half = height_map.rows()/2;
+    // Height map: 1000 * 1000 grids
+    // grid_size = 0.015 m = 1.5 cm
+    int row_idx_half = height_map.rows()/2; // 500
+    int col_idx_half = height_map.rows()/2; // 500
 
     int x_idx = floor(local_pf[0]/grid_size) + row_idx_half;
     int y_idx = floor(local_pf[1]/grid_size) + col_idx_half;

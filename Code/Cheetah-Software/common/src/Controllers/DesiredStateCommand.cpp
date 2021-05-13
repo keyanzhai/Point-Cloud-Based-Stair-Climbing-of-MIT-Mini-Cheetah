@@ -30,9 +30,13 @@ void DesiredStateCommand<T>::convertToStateCommands() {
 
   // THIS SHOULD be DISABLE Soon
   if(parameters->use_rc) {
+    // printf("*********************************************** use_rc = true **********************************\n");
     if(rcCommand->mode == RC_mode::QP_STAND){ // Stand
       joystickLeft[0] = 0.; // Y
+      // joystickLeft[0] = 0.5; // Y
       joystickLeft[1] = 0.;
+      // joystickLeft[1] = 0.1;
+      printf("joystickLeft[1] = %f\n", joystickLeft[1]);
       joystickRight[0] = rcCommand->rpy_des[2]; // Yaw
       //height_cmd = rcCommand->height_variation;
 
@@ -63,15 +67,20 @@ void DesiredStateCommand<T>::convertToStateCommands() {
   // Warning!!!!
   // Recommend not to use stateDes
   // We are going to remove it soon
+  // printf("*********************************************** use_rc = false **********************************\n");
 
+  // joystickLeft[1] = 0.1; 
   joystickLeft[0] *= -1.f;
   joystickRight[0] *= -1.f;
 
   leftAnalogStick = leftAnalogStick * (T(1) - filter) + joystickLeft * filter;
   rightAnalogStick = rightAnalogStick * (T(1) - filter) + joystickRight * filter;
 
+  // leftAnalogStick[1] = 0.1; // after deadband, v_x = 0.3
+
   // Desired states from the controller
   data.stateDes(6) = deadband(leftAnalogStick[1], minVelX, maxVelX);  // forward linear velocity
+  // data.stateDes(6) = deadband(leftAnalogStick[1]+0.5, minVelX, maxVelX);  // forward linear velocity
   data.stateDes(7) = deadband(leftAnalogStick[0], minVelY, maxVelY);  // lateral linear velocity
   data.stateDes(8) = 0.0;  // vertical linear velocity
   data.stateDes(0) = dt * data.stateDes(6);  // X position
@@ -96,7 +105,7 @@ void DesiredStateCommand<T>::setCommandLimits(T minVelX_in, T maxVelX_in,
   maxTurnRate = maxTurnRate_in;
 }
 
-/**
+/** Not used
  *
  */
 template <typename T>
@@ -124,9 +133,9 @@ void DesiredStateCommand<T>::desiredStateTrajectory(int N, Vec10<T> dtVec) {
     A(4, 10) = dtVec(k - 1);
     A(5, 11) = dtVec(k - 1);
     data.stateTrajDes.col(k) = A * data.stateTrajDes.col(k - 1);
-    for (int i = 0; i < 12; i++) {
+    // for (int i = 0; i < 12; i++) {
       // std::cout << data.stateTrajDes(i, k) << " ";
-    }
+    // }
     // std::cout << std::endl;
   }
   // std::cout << std::endl;
