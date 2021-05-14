@@ -11,12 +11,8 @@ ground-plane:
 stairs-1:
     type: "stairs"
     steps: 10
-    rise: 0.105 #0.1778 # 7 inches
-<<<<<<< HEAD
-    run: 0.285 #0.2794 # 11 inches
-=======
-    run: 0.17 #0.2794 # 11 inches
->>>>>>> 80b43873c85049e801820ce9ac0ba739258c0bd5
+    rise: 0.105 # unit: meters
+    run: 0.285 
     width: 1.2
     mu: .7
     restitution: 0

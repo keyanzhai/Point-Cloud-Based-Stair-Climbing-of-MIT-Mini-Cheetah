@@ -75,11 +75,7 @@ void RobotRunner::init() {
 
   _robot_ctrl->initializeController();
 
-<<<<<<< HEAD
   outfile.open("/home/zky/Desktop/Courses/Thesis/Cheetah-Software/Experiment/Simulation/old.out", std::ios::out | std::ios::trunc);
-=======
-  outfile.open("/home/zky/Desktop/Courses/Thesis/Cheetah-Software/Experiment/Simulation/height1.out", std::ios::out | std::ios::trunc);
->>>>>>> 80b43873c85049e801820ce9ac0ba739258c0bd5
 }
 
 /**
