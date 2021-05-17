@@ -96,7 +96,7 @@ void ConvexMPCLocomotion::_SetupCommand(ControlFSMData<float> & data){
   {
     _yaw_turn_rate = data._desiredStateCommand->rightAnalogStick[0];
     //x_vel_cmd = data._desiredStateCommand->leftAnalogStick[1];
-    x_vel_cmd = data._desiredStateCommand->leftAnalogStick[1]+0.1; // Give the robot a forward velocity command of 0.1
+    x_vel_cmd = data._desiredStateCommand->leftAnalogStick[1] + 0.1; // Give the robot a forward velocity command of 0.1
     y_vel_cmd = data._desiredStateCommand->leftAnalogStick[0];
   }
   _x_vel_des = _x_vel_des*(1-filter) + x_vel_cmd*filter; // Give the robot a forward speed of 0.01 m/s
@@ -257,7 +257,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   float pitch_angle = 0.;
   float front_height = 0., front_x = 0.;
   float back_height = 0., back_x = 0.;
-  float body_height_climbing;
+  float body_height_climbing = _body_height;
   float stair_height = 0.105;
   // ===========================================
 
@@ -271,7 +271,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     }
     //if(firstSwing[i]) {
     //footSwingTrajectories[i].setHeight(.05);
-    footSwingTrajectories[i].setHeight(0.1);
+    footSwingTrajectories[i].setHeight(0.15);
     Vec3<float> offset(0, side_sign[i] * .065, 0);
 
     Vec3<float> pRobotFrame = (data._quadruped->getHipLocation(i) + offset);
@@ -327,9 +327,9 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     // Avoid stepping on the edge
     for (int n = 0; n < 11; n++)
     {
-      if (Pf[0] >= 0.30 + n * 0.285 - 0.05 && Pf[0] <= 0.30 + n * 0.285 + 0.05)
+      if (Pf[0] >= 0.30 + n * 0.285 - 0.05 && Pf[0] <= 0.30 + n * 0.285)
       {
-        Pf[0] = 0.30 + n * 0.285 + 0.06;
+        Pf[0] = 0.30 + n * 0.285 + 0.07;
         break;
       }
     }
@@ -356,10 +356,10 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     }
     // ===========================================
 
-    // printf("leg = %d, Pf[0] = %f, Pf[1] = %f, Pf[2] = %f\n", i, Pf[0], Pf[1], Pf[2]);
+    printf("leg = %d, Pf[0] = %f, Pf[1] = %f, Pf[2] = %f\n", i, Pf[0], Pf[1], Pf[2]);
 
     footSwingTrajectories[i].setFinalPosition(Pf);
-    footSwingTrajectories[i].setHeight(stair_height + 0.05); // Keep this static
+    footSwingTrajectories[i].setHeight(stair_height + 0.1); // Keep this static
   }
 
   // ============= New algorithm ===============
@@ -378,11 +378,14 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
      0, 0, 150;
   Kp_stance = 0*Kp;
 
-
-  Kd << 7, 0, 0,
-     0, 7, 0,
-     0, 0, 7;
+  // Kd << 7, 0, 0,
+  //    0, 7, 0,
+  //    0, 0, 7;
+  Kd << 11, 0, 0,
+     0, 11, 0,
+     0, 0, 11;
   Kd_stance = Kd;
+  
   // gait
   Vec4<float> contactStates = gait->getContactState();
   Vec4<float> swingStates = gait->getSwingState();
