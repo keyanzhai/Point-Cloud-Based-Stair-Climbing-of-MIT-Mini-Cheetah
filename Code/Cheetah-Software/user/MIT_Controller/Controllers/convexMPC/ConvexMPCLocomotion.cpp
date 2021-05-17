@@ -8,8 +8,8 @@
 
 #include "Gait.h"
 
-//#define DRAW_DEBUG_SWINGS
-//#define DRAW_DEBUG_PATH
+#define DRAW_DEBUG_SWINGS
+#define DRAW_DEBUG_PATH
 
 
 ////////////////////
@@ -18,7 +18,7 @@
 
 ConvexMPCLocomotion::ConvexMPCLocomotion(float _dt, int _iterations_between_mpc, MIT_UserParameters* parameters) :
   iterationsBetweenMPC(_iterations_between_mpc),
-  horizonLength(10),
+  horizonLength(10), // keep this as 10, don't change
   dt(_dt),
   trotting(horizonLength, Vec4<int>(0,5,5,0), Vec4<int>(5,5,5,5),"Trotting"),
   bounding(horizonLength, Vec4<int>(5,5,0,0),Vec4<int>(4,4,4,4),"Bounding"),
@@ -79,6 +79,8 @@ void ConvexMPCLocomotion::_SetupCommand(ControlFSMData<float> & data){
     assert(false);
   }
 
+  // Setup translational velocity in the X and Y direction, 
+  // and the rotational velocity in the yaw direction
   float x_vel_cmd, y_vel_cmd;
   float filter(0.1);
   if(data.controlParameters->use_rc)
@@ -111,15 +113,19 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
 
   // Command Setup
   _SetupCommand(data);
+
+  // Setup gait (setup by the user parameter "cmpc_gait")
   gaitNumber = data.userParameters->cmpc_gait;
   if(gaitNumber >= 10) {
     gaitNumber -= 10;
     omniMode = true;
   }
 
+  // Get state estimation results
   auto& seResult = data._stateEstimator->getResult();
 
   // Check if transition to standing
+  // If needs transition, set the standing trajectory
   if(((gaitNumber == 4) && current_gait != 4) || firstRun)
   {
     stand_traj[0] = seResult.position[0];
@@ -132,8 +138,8 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     world_position_desired[1] = stand_traj[1];
   }
 
-  // pick gait
-  Gait* gait = &trotting;
+  // pick gait according to the gaitNumber
+  Gait* gait = &trotting; // default gaitNumber = 9 (trotting gait)
   if(gaitNumber == 1)
     gait = &bounding;
   else if(gaitNumber == 2)
@@ -209,6 +215,9 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     pFoot[i] = seResult.position + 
       seResult.rBody.transpose() * (data._quadruped->getHipLocation(i) + 
           data._legController->datas[i].p);
+    
+    // printf("Initial foot position: ");
+    // printf("leg = %d, Pf[0] = %f, Pf[1] = %f, Pf[2] = %f\n", i, pFoot[i][0], pFoot[i][1], pFoot[i][2]);
   }
 
   if(gait != &standing) {
@@ -244,11 +253,13 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   //float v_abs = std::fabs(seResult.vBody[0]);
   float v_abs = std::fabs(v_des_robot[0]);
 
-  // float pitch_angle = 0.;
-  // float front_height = 0., front_x = 0.;
-  // float back_height = 0., back_x = 0.;
-  // float body_height_climbing;
-  // float stair_height = 0.01;
+  // ============== New Algorithm ==============
+  float pitch_angle = 0.;
+  float front_height = 0., front_x = 0.;
+  float back_height = 0., back_x = 0.;
+  float body_height_climbing;
+  float stair_height = 0.105;
+  // ===========================================
 
   for(int i = 0; i < 4; i++)
   {
@@ -297,63 +308,66 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     pfy_rel = fminf(fmaxf(pfy_rel, -p_rel_max), p_rel_max);
     Pf[0] +=  pfx_rel;
     Pf[1] +=  pfy_rel;
-    Pf[2] = -0.003;
-  //   Pf[2] = 0.01;
+    Pf[2] = -0.03;
 
-  //   Vec3<float> local_pf = Pf - seResult.position;
-  //   int row_idx_half = 1000/2; // 500
-  //   int col_idx_half = 1000/2; // 500
+    // ============== New Algorithm ==============
+    Vec3<float> local_pf = Pf - seResult.position;
+    int row_idx_half = 1000/2; // 500
+    int col_idx_half = 1000/2; // 500
 
-  //   int x_idx = floor(local_pf[0]/0.015) + row_idx_half;
-  //   int y_idx = floor(local_pf[1]/0.015) + col_idx_half;
+    int x_idx = floor(local_pf[0]/0.015) + row_idx_half;
+    int y_idx = floor(local_pf[1]/0.015) + col_idx_half;
 
-  //   int x_idx_selected = x_idx;
-  //   int y_idx_selected = y_idx;
+    int x_idx_selected = x_idx;
+    int y_idx_selected = y_idx;
 
-  //   Pf[0] = (x_idx_selected - row_idx_half)*0.015 + seResult.position[0];
-  //   Pf[1] = (y_idx_selected - col_idx_half)*0.015 + seResult.position[1];
+    Pf[0] = (x_idx_selected - row_idx_half)*0.015 + seResult.position[0];
+    Pf[1] = (y_idx_selected - col_idx_half)*0.015 + seResult.position[1];
 
-  //   // Avoid stepping on the edge
-  //   for (int n = 0; n < 11; n++)
-  //   {
-  //     if (Pf[0] >= 0.30 + n * 0.285 - 0.06 && Pf[0] <= 0.30 + n * 0.285 + 0.06)
-  //     {
-  //       Pf[0] = 0.30 + n * 0.285 + 0.07;
-  //       break;
-  //     }
-  //   }
+    // Avoid stepping on the edge
+    for (int n = 0; n < 11; n++)
+    {
+      if (Pf[0] >= 0.30 + n * 0.285 - 0.05 && Pf[0] <= 0.30 + n * 0.285 + 0.05)
+      {
+        Pf[0] = 0.30 + n * 0.285 + 0.06;
+        break;
+      }
+    }
 
-  //   // Determine Height of Pf
-  //   for (int n = 0; n < 11; n++)
-  //   {
-  //     if (Pf[0] >= 0.30 + n * 0.285 && Pf[0] <= 0.30 + (n + 1) * 0.285)
-  //     {
-  //       Pf[2] = stair_height * (n + 1);
-  //       break;
-  //     }
-  //   }
+    // Determine Height of Pf
+    for (int n = 0; n < 11; n++)
+    {
+      if (Pf[0] >= 0.30 + n * 0.285 && Pf[0] <= 0.30 + (n + 1) * 0.285)
+      {
+        Pf[2] = stair_height * (n + 1);
+        break;
+      }
+    }
 
-  //   printf("leg = %d, Pf[0] = %f, Pf[1] = %f, Pf[2] = %f\n", i, Pf[0], Pf[1], Pf[2]);
+    if (i == 0)
+    {
+      front_height = Pf[2];
+      front_x = Pf[0];
+    }
+    else if (i == 2)
+    {
+      back_height = Pf[2];
+      back_x = Pf[0];
+    }
+    // ===========================================
 
-  footSwingTrajectories[i].setFinalPosition(Pf);
-  //   footSwingTrajectories[i].setHeight(Pf[2]+0.1);
+    // printf("leg = %d, Pf[0] = %f, Pf[1] = %f, Pf[2] = %f\n", i, Pf[0], Pf[1], Pf[2]);
 
-  //   if (i == 0)
-  //   {
-  //     front_height = Pf[2];
-  //     front_x = Pf[0];
-  //   }
-  //   else if (i == 2)
-  //   {
-  //     back_height = Pf[2];
-  //     back_x = Pf[0];
-  //   }
+    footSwingTrajectories[i].setFinalPosition(Pf);
+    footSwingTrajectories[i].setHeight(stair_height + 0.05); // Keep this static
   }
 
-  // pitch_angle = atan2(front_height-back_height, front_x-back_x);
-  // body_height_climbing = _body_height + front_height;
-  // printf("pitch_angle = %f\n", -pitch_angle/3.14*180);
-  // printf("body_height_climbing = %f\n", body_height_climbing);
+  // ============= New algorithm ===============
+  pitch_angle = atan2(front_height-back_height, front_x-back_x);
+  body_height_climbing = _body_height + front_height;
+  printf("pitch_angle = %f\n", -pitch_angle/3.14*180);
+  printf("body_height_climbing = %f\n", body_height_climbing);
+  // ===========================================
 
   // calc gait
   iterationCounter++;
@@ -509,8 +523,8 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   // Update For WBC
   pBody_des[0] = world_position_desired[0];
   pBody_des[1] = world_position_desired[1];
-  pBody_des[2] = _body_height;
-  //pBody_des[2] = body_height_climbing;
+  // pBody_des[2] = _body_height;
+  pBody_des[2] = body_height_climbing; // new algorithm
 
   vBody_des[0] = v_des_world[0];
   vBody_des[1] = v_des_world[1];
@@ -520,8 +534,8 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
 
   pBody_RPY_des[0] = 0.;
   pBody_RPY_des[1] = 0.; 
-  // pBody_RPY_des[1] = -pitch_angle; 
-  pBody_RPY_des[2] = _yaw_des;
+  // pBody_RPY_des[2] = _yaw_des;
+  pBody_RPY_des[1] = -pitch_angle; // new algorithm
 
   vBody_Ori_des[0] = 0.;
   vBody_Ori_des[1] = 0.;
@@ -530,8 +544,6 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   //contact_state = gait->getContactState();
   contact_state = gait->getContactState();
   // END of WBC Update
-
-
 }
 
 template<>
