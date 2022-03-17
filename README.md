@@ -1,4 +1,3 @@
-# Graduation-Project
+# Bachelor's Thesis 
 
-Undergraduate Graduation Project
-Keyan Zhai
+Point-Cloud Based Stair Climbing of MIT Mini Cheetah
